@@ -63,8 +63,8 @@ class DoctorController(private val doctorService: DoctorService,
         val idUUID = UUID.fromString(id)
         val docOptional = doctorService.findById(idUUID)
         if (docOptional.isPresent){
-            docOptional.get().name = doctorDTO.name
-            docOptional.get().role = doctorDTO.role
+            docOptional.get().name = doctorDTO.name!!
+            docOptional.get().role = Role.valueOf(doctorDTO.role!!)
             doctorService.save(docOptional.get())
             return ResponseEntity.noContent().build()
         }
