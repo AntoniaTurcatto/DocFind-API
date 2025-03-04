@@ -1,0 +1,32 @@
+create table doctor(
+	id uuid NOT NULL primary key,
+	name VARCHAR(50) not null,
+	role VARCHAR(25) not null,
+	data_register timestamp without time zone,
+    data_update timestamp without time zone,
+    id_user uuid,
+    constraint chk_role check (role in ('SURGEON', 'ORTHOPEDIST',
+    	'PHARMACIST', 'OTORHINOLARYNGOLOGIST', 'OPHTHALMOLOGIST'))
+);
+
+create table patient(
+	id uuid not null primary key,
+	name VARCHAR(50) not null,
+	age INTEGER not null,
+	address varchar(50),
+	data_register timestamp without time zone,
+    data_update timestamp without time zone,
+    id_user uuid
+);
+
+create table appointment(
+	id uuid not null primary key,
+	fk_doctor uuid not null,
+	fk_patient uuid not null,
+	time TIMESTAMP not null,
+	data_register timestamp without time zone,
+    data_update timestamp without time zone,
+    id_user uuid,
+	CONSTRAINT c_appointment_doctor FOREIGN key (fk_doctor) REFERENCES doctor(id),
+	constraint c_appointment_patient foreign key (fk_patient) references patient(id)
+);
