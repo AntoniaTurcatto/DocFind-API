@@ -1,7 +1,7 @@
 package io.github.antoniaturcatto.docfind.controller.dto
 
-import io.github.antoniaturcatto.docfind.controller.dto.validator.ValidRole
-import io.github.antoniaturcatto.docfind.model.Role
+import io.github.antoniaturcatto.docfind.common.validator.ValidRole
+import io.github.antoniaturcatto.docfind.common.model.Role
 import jakarta.persistence.Enumerated
 import java.util.UUID
 import jakarta.validation.constraints.NotBlank;

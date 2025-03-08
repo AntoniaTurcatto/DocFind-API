@@ -1,7 +1,7 @@
 package io.github.antoniaturcatto.docfind.repository.specs
 
-import io.github.antoniaturcatto.docfind.model.Doctor
-import io.github.antoniaturcatto.docfind.model.Role
+import io.github.antoniaturcatto.docfind.common.model.Doctor
+import io.github.antoniaturcatto.docfind.common.model.Role
 import org.springframework.data.jpa.domain.Specification
 import java.util.UUID
 

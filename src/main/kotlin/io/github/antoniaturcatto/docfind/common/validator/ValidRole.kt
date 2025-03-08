@@ -1,4 +1,4 @@
-package io.github.antoniaturcatto.docfind.controller.dto.validator
+package io.github.antoniaturcatto.docfind.common.validator
 
 import jakarta.validation.Constraint
 import jakarta.validation.Payload

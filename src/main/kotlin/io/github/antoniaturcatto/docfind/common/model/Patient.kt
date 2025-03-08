@@ -1,4 +1,4 @@
-package io.github.antoniaturcatto.docfind.model
+package io.github.antoniaturcatto.docfind.common.model
 
 import jakarta.persistence.*
 import org.springframework.data.annotation.CreatedDate
@@ -13,28 +13,29 @@ import java.util.*
 class Patient(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id")
     private val _id: UUID?,
 
-    @Column(length = 50, nullable = false)
+    @Column(length = 50, nullable = false, name = "name")
     private var _name: String,
 
     @Column(nullable = false)
-    private var age:Int,
+    var age:Int,
 
-    @Column(length = 50,nullable = false)
+    @Column(length = 50,nullable = false, name = "address")
     private var _address:String = "Unknown", //default value if not input
 
     @CreatedDate
     @Column(name = "data_register")
-    private var dataRegister: LocalDateTime?,
+    private var dataRegister: LocalDateTime? = null,
 
     @LastModifiedDate
     @Column(name = "data_update")
-    private var dataUpdate: LocalDateTime?,
+    private var dataUpdate: LocalDateTime? = null,
 
     @Column(name = "id_user")
-    private var idUser: UUID?
-) : Person  {
+    private var idUser: UUID? = null
+) : Person {
 
     init {
         val formatString: (String) -> String = {

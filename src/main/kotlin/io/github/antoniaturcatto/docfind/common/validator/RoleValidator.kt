@@ -1,6 +1,6 @@
-package io.github.antoniaturcatto.docfind.controller.dto.validator
+package io.github.antoniaturcatto.docfind.common.validator
 
-import io.github.antoniaturcatto.docfind.model.Role
+import io.github.antoniaturcatto.docfind.common.model.Role
 import jakarta.validation.ConstraintValidator
 import jakarta.validation.ConstraintValidatorContext
 import org.springframework.stereotype.Component

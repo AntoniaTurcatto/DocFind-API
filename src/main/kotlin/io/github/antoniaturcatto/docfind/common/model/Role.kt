@@ -1,4 +1,4 @@
-package io.github.antoniaturcatto.docfind.model
+package io.github.antoniaturcatto.docfind.common.model
 
 enum class Role(val codRole:Int) {
     SURGEON(0),
@@ -8,11 +8,11 @@ enum class Role(val codRole:Int) {
     OPHTHALMOLOGIST(4);
 
     companion object{
-        fun getRoleEnum(codRole:Int):Role?{
+        fun getRoleEnum(codRole:Int): Role?{
             return entries.find { it.codRole == codRole }
         }
 
-        fun getRoleEnum(role:String):Role?{
+        fun getRoleEnum(role:String): Role?{
             return runCatching {
                 valueOf(role.uppercase())
             }.getOrNull()

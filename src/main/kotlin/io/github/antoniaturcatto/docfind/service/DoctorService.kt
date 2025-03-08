@@ -1,7 +1,8 @@
 package io.github.antoniaturcatto.docfind.service
 
-import io.github.antoniaturcatto.docfind.model.Doctor
-import io.github.antoniaturcatto.docfind.model.Role
+import io.github.antoniaturcatto.docfind.common.model.Doctor
+import io.github.antoniaturcatto.docfind.common.model.Role
+import io.github.antoniaturcatto.docfind.common.validator.DoctorValidator
 import io.github.antoniaturcatto.docfind.repository.DoctorRepository
 import io.github.antoniaturcatto.docfind.repository.specs.DoctorSpecs
 import org.springframework.data.domain.Page
@@ -11,9 +12,9 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class DoctorService (private val doctorRepository: DoctorRepository){
+class DoctorService (private val doctorRepository: DoctorRepository, private val validator: DoctorValidator){
 
-    fun search(id:UUID?, name:String?, role: Role?, page: Int, pageSize: Int): Page<Doctor>{
+    fun search(id:UUID?, name:String?, role: Role?, page: Int, pageSize: Int): Page<Doctor> {
         var specs: Specification<Doctor> = Specification.where({ root, query, cb ->  cb.conjunction()})
 
         if (id != null)
@@ -28,11 +29,13 @@ class DoctorService (private val doctorRepository: DoctorRepository){
         return doctorRepository.findAll(specs, PageRequest.of(page,pageSize))
     }
 
-    fun save(doctor:Doctor): Doctor{
+    fun save(doctor: Doctor): Doctor {
+        validator.validate(doctor)
         return doctorRepository.save(doctor)
     }
 
     fun delete(doctor: Doctor){
+        validator.canDelete(doctor)
         doctorRepository.deleteById(doctor.id!!)
     }
 

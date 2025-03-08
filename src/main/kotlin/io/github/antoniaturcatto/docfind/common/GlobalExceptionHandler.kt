@@ -1,13 +1,14 @@
 package io.github.antoniaturcatto.docfind.common
 
+import io.github.antoniaturcatto.docfind.common.exceptions.ConflictException
 import io.github.antoniaturcatto.docfind.controller.dto.ErrorDTO
 import io.github.antoniaturcatto.docfind.controller.dto.ErrorFieldDTO
 import org.springframework.http.HttpStatus
-import org.springframework.validation.FieldError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import java.lang.IllegalArgumentException
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
@@ -22,6 +23,18 @@ class GlobalExceptionHandler {
         return ErrorDTO(HttpStatus.UNPROCESSABLE_ENTITY.value(),
             "Validation error",
             fieldErrorsDTO)
+    }
+
+    @ExceptionHandler(ConflictException::class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    fun handleConflictException(e:ConflictException):ErrorDTO{
+        return ErrorDTO.conflict(e.message!!)
+    }
+
+    @ExceptionHandler(IllegalArgumentException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun handleIllegalArgumentException(e: IllegalArgumentException):ErrorDTO{
+        return ErrorDTO.badRequest("Invalid data")
     }
 
 }

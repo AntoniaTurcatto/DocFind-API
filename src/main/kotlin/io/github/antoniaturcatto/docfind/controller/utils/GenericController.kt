@@ -6,10 +6,10 @@ import java.util.UUID
 
 interface GenericController {
 
-    fun gerarHeaderLocation(id: UUID): URI {
+    fun generateHeaderLocation(id: UUID): URI {
         return ServletUriComponentsBuilder
             .fromCurrentRequest()
-            .path("/{id}")
+            .queryParam("id", id)
             .buildAndExpand(id)
             .toUri()
     }

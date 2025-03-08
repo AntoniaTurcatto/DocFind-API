@@ -1,4 +1,4 @@
-package io.github.antoniaturcatto.docfind.model
+package io.github.antoniaturcatto.docfind.common.model
 
 import jakarta.persistence.*
 import org.springframework.data.annotation.CreatedDate
