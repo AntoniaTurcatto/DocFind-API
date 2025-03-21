@@ -9,13 +9,13 @@ class PatientSpecs {
     companion object{
         fun idEqual(id:UUID):Specification<Patient>{
             return Specification { root, query, criteriaBuilder ->
-                criteriaBuilder.equal(root.get<UUID>("_id"), id)
+                criteriaBuilder.equal(root.get<UUID>("id"), id)
             }
         }
 
         fun nameLike(name:String):Specification<Patient>{
             return Specification { root, query, criteriaBuilder ->
-                criteriaBuilder.like(criteriaBuilder.upper(root.get("_name")), name.uppercase())
+                criteriaBuilder.like(criteriaBuilder.upper(root.get("name")), name.uppercase())
             }
         }
 
@@ -27,7 +27,7 @@ class PatientSpecs {
 
         fun addressLike(address: String):Specification<Patient>{
             return Specification { root, query, cb ->
-                cb.like(cb.upper(root.get("_address")), address.uppercase())
+                cb.like(cb.upper(root.get("address")), address.uppercase())
             }
         }
     }

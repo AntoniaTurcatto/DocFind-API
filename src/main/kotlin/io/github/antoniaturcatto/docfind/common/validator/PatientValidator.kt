@@ -2,13 +2,13 @@ package io.github.antoniaturcatto.docfind.common.validator
 
 import io.github.antoniaturcatto.docfind.common.exceptions.ConflictException
 import io.github.antoniaturcatto.docfind.common.model.Patient
-import io.github.antoniaturcatto.docfind.repository.AppointmentRepository
+import io.github.antoniaturcatto.docfind.repository.MedicalAppointmentRepository
 import io.github.antoniaturcatto.docfind.repository.PatientRepository
 import org.springframework.stereotype.Component
 
 @Component
 class PatientValidator(private val patientRepository: PatientRepository,
-    private val appointmentRepository: AppointmentRepository) {
+    private val medicalAppointmentRepository: MedicalAppointmentRepository) {
 
     fun validate(patient: Patient){
         if (isConflictuous(patient))
@@ -22,7 +22,7 @@ class PatientValidator(private val patientRepository: PatientRepository,
 
     fun isConflictuous(patient: Patient):Boolean{
         val patientOpt = patientRepository.findByNameAndAgeAndAddress(
-            patient.name, patient.age, patient.address
+            patient.name, patient.age, patient.address!!
         )
 
         return if (patient.id == null){
@@ -33,6 +33,6 @@ class PatientValidator(private val patientRepository: PatientRepository,
     }
 
     fun haveAppointmentsScheduled(patient: Patient):Boolean{
-        return appointmentRepository.existsByPatient(patient)
+        return medicalAppointmentRepository.existsByPatient(patient)
     }
 }

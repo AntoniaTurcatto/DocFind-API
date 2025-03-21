@@ -51,7 +51,7 @@ class PatientService(private val patientRepository: PatientRepository, private v
         patientRepository.deleteById(patient.id!!)
     }
 
-    fun findById(id: String):Optional<Patient>{
-        return patientRepository.findById(UUID.fromString(id))
+    fun findById(id: UUID):Optional<Patient>{
+        return patientRepository.findById(id)
     }
 }

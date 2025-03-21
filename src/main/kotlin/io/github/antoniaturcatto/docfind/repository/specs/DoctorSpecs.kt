@@ -11,19 +11,19 @@ class DoctorSpecs {
 
         fun idEqual(id: UUID):Specification<Doctor>{
             return Specification { root, query, cb ->
-                cb.equal(root.get<UUID>("_id"), id)
+                cb.equal(root.get<UUID>("id"), id)
             }
         }
 
         fun nameLike(name: String): Specification<Doctor> {
             return Specification { root, query, cb->
-                cb.like(cb.upper(root.get("_name")), "%${name.uppercase()}%")
+                cb.like(cb.upper(root.get("name")), "%${name.uppercase()}%")
             }
         }
 
         fun roleEqual(role: Role):Specification<Doctor>{
             return Specification { root, query, cb ->
-                cb.equal(root.get<Role>("_role"), role)
+                cb.equal(root.get<Role>("role"), role)
             }
         }
 

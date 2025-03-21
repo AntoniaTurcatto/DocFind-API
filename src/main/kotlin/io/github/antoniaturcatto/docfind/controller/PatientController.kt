@@ -24,12 +24,12 @@ import java.util.UUID
 class PatientController(private val service: PatientService) :GenericController {
 
     @GetMapping
-    fun search(@RequestParam(name = "id", required = false) @Valid id: UUID?,
-        @RequestParam(name = "name", required = false) @Valid name:String?,
-        @RequestParam(name = "age", required = false) @Valid age:Int?,
-        @RequestParam(name = "address", required = false) @Valid address:String?,
-        @RequestParam(value = "page", defaultValue = "0") @Valid page: Int,
-        @RequestParam(value = "page-size", defaultValue = "10") @Valid pageSize: Int
+    fun search(@RequestParam(name = "id", required = false) id: UUID?,
+        @RequestParam(name = "name", required = false) name:String?,
+        @RequestParam(name = "age", required = false) age:Int?,
+        @RequestParam(name = "address", required = false) address:String?,
+        @RequestParam(value = "page", defaultValue = "0") page: Int,
+        @RequestParam(value = "page-size", defaultValue = "10") pageSize: Int
     ):ResponseEntity<Page<PatientDTO>>{
         val pageObtained = service.search(id, name, age, address, page, pageSize)
         val pageInDTO = pageObtained.map { toPatientDTO(it) }
@@ -45,8 +45,8 @@ class PatientController(private val service: PatientService) :GenericController 
     }
 
     @DeleteMapping("/{id}")
-    fun delete(@PathVariable("id") idStr:String): ResponseEntity<Void>{
-        val patientOpt = service.findById(idStr)
+    fun delete(@PathVariable("id") id:UUID): ResponseEntity<Void>{
+        val patientOpt = service.findById(id)
         if (patientOpt.isPresent){
             service.delete(patientOpt.get())
             return ResponseEntity.noContent().build()
@@ -55,13 +55,13 @@ class PatientController(private val service: PatientService) :GenericController 
     }
 
     @PutMapping("/{id}")
-    fun update(@PathVariable("id") idStr: String, @RequestBody @Valid dto: PatientDTO
+    fun update(@PathVariable("id") id: UUID, @RequestBody @Valid dto: PatientDTO
     ):ResponseEntity<Void>{
-        val patientOpt = service.findById(idStr)
+        val patientOpt = service.findById(id)
         if (patientOpt.isPresent){
             patientOpt.get().name = dto.name
             patientOpt.get().age = dto.age
-            patientOpt.get().address = dto.address
+            patientOpt.get().address = dto.address?:"Unknown"
             service.save(patientOpt.get())
             return ResponseEntity.noContent().build()
         }

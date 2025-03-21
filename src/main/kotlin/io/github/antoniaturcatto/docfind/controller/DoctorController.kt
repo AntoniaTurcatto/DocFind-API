@@ -26,11 +26,11 @@ class DoctorController(private val doctorService: DoctorService) : GenericContro
 
     @GetMapping()
     fun search(
-        @RequestParam(value = "id", required = false) @Valid id: UUID?,
-        @RequestParam(value = "name", required = false) @Valid name: String?,
-        @RequestParam(value = "role", required = false) @Valid role: Role?,
-        @RequestParam(value = "page", defaultValue = "0") @Valid page: Int,
-        @RequestParam(value = "page-size", defaultValue = "10") @Valid pageSize: Int
+        @RequestParam(value = "id", required = false) id: UUID?,
+        @RequestParam(value = "name", required = false) name: String?,
+        @RequestParam(value = "role", required = false) role: Role?,
+        @RequestParam(value = "page", defaultValue = "0") page: Int,
+        @RequestParam(value = "page-size", defaultValue = "10") pageSize: Int
     ):ResponseEntity<Page<DoctorDTO>>{
         val pageObtained = doctorService.search(id,name,role, page, pageSize)
         val pageDTO = pageObtained.map { toDoctorDTO(it) }
@@ -47,9 +47,8 @@ class DoctorController(private val doctorService: DoctorService) : GenericContro
     }
 
     @DeleteMapping("/{id}")
-    fun delete(@PathVariable("id") id: String): ResponseEntity<Any>{
-        val idUUID = UUID.fromString(id)
-        val docOptional = doctorService.findById(idUUID)
+    fun delete(@PathVariable("id") id: UUID): ResponseEntity<Any>{
+        val docOptional = doctorService.findById(id)
         if (docOptional.isPresent){
             doctorService.delete(docOptional.get())
             return ResponseEntity.noContent().build()
@@ -58,9 +57,8 @@ class DoctorController(private val doctorService: DoctorService) : GenericContro
     }
 
     @PutMapping("/{id}")
-    fun update(@PathVariable("id") id: String, @RequestBody @Valid doctorDTO: DoctorDTO): ResponseEntity<Any>{
-        val idUUID = UUID.fromString(id)
-        val docOptional = doctorService.findById(idUUID)
+    fun update(@PathVariable("id") id: UUID, @RequestBody @Valid doctorDTO: DoctorDTO): ResponseEntity<Any>{
+        val docOptional = doctorService.findById(id)
         if (docOptional.isPresent){
             docOptional.get().name = doctorDTO.name!!
             docOptional.get().role = Role.valueOf(doctorDTO.role!!)

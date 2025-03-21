@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import java.util.UUID
 
-interface AppointmentRepository: JpaRepository<MedicalAppointment, UUID>, JpaSpecificationExecutor<MedicalAppointment> {
+interface MedicalAppointmentRepository: JpaRepository<MedicalAppointment, UUID>, JpaSpecificationExecutor<MedicalAppointment> {
 
     fun existsByDoctor(doctor: Doctor):Boolean
 
