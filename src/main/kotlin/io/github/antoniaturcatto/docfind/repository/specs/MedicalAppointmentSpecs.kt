@@ -68,11 +68,11 @@ class MedicalAppointmentSpecs {
         fun dayIn(days: List<Int>):Specification<MedicalAppointment>{
             println("Comparando dias: $days")
             return Specification { root, query, cb ->
-                root.get<LocalDateTime>("dateTime")?.let { it ->
+                root.get<LocalDateTime>("dateTime")?.let { date ->
                     cb.function(
                         "to_char",
                         String::class.java,
-                        it,
+                        date,
                         cb.literal("dd")
                     ).`in`(days.map { it.toString() })
                 }
@@ -81,25 +81,27 @@ class MedicalAppointmentSpecs {
 
         fun monthIn(months: List<Int>):Specification<MedicalAppointment>{
             return Specification { root, query, cb ->
-                root.get<LocalDateTime>("dateTime")?.let { it ->
+                println("Months received: ${months.map { "%02d".format(it) }}")
+                root.get<LocalDateTime>("dateTime")?.let { date ->
                     cb.function(
                     "to_char",
                     String::class.java,
-                    it,
+                        date,
                     cb.literal("mm")
-                ).`in`(months.map { it.toString() })
+                ).`in`(months.map { "%02d".format(it)})
                 }
             }
         }
 
         fun yearIn(years: List<Int>):Specification<MedicalAppointment>{
+            println("Years received: $years")
             return Specification { root, query, cb ->
-                root.get<LocalDateTime>("dateTime")?.let { it ->
+                root.get<LocalDateTime>("dateTime")?.let { date ->
                     cb.function(
                         "to_char",
                         String::class.java,
-                        it,
-                        cb.literal("mm")
+                        date,
+                        cb.literal("YYYY")
                     ).`in`(years.map { it.toString() })
                 }
             }

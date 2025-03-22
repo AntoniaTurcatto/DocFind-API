@@ -11,6 +11,7 @@ import io.github.antoniaturcatto.docfind.controller.utils.GenericController
 import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -25,6 +26,7 @@ import java.util.UUID
 class PatientController(private val service: PatientService) :GenericController {
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('DOCTOR', 'PATIENT')")
     fun search(@RequestParam(name = "id", required = false) id: UUID?,
         @RequestParam(name = "name", required = false) name:String?,
         @RequestParam(name = "age", required = false) age:Int?,
@@ -37,6 +39,7 @@ class PatientController(private val service: PatientService) :GenericController 
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('DOCTOR', 'PATIENT')")
     fun save(@RequestBody @Valid dto: PatientDTO):ResponseEntity<Void>{
         val patientEntity = service.save(dto)
         val location = generateHeaderLocation(patientEntity.id!!)
@@ -44,12 +47,14 @@ class PatientController(private val service: PatientService) :GenericController 
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'PATIENT')")
     fun delete(@PathVariable("id") id:UUID): ResponseEntity<Void>{
         service.delete(id)
         return ResponseEntity.noContent().build()
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'PATIENT')")
     fun update(@PathVariable("id") id: UUID, @RequestBody @Valid dto: UpdatePatientDTO
     ):ResponseEntity<Void>{
         service.save(id, dto)?.let {

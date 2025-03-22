@@ -5,6 +5,7 @@ import io.github.antoniaturcatto.docfind.common.dto.ErrorDTO
 import io.github.antoniaturcatto.docfind.common.dto.ErrorFieldDTO
 import org.springframework.http.HttpStatus
 import org.springframework.http.converter.HttpMessageNotReadableException
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
@@ -36,6 +37,12 @@ class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     fun handleHttpMessageNotReadableException(e: HttpMessageNotReadableException): ErrorDTO {
         return ErrorDTO.badRequest("Invalid data")
+    }
+
+    @ExceptionHandler(UsernameNotFoundException::class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    fun handleUsernameNotFoundException(e: UsernameNotFoundException): ErrorDTO{
+        return ErrorDTO(HttpStatus.NOT_FOUND.value(), e.message?: "", emptyList())
     }
 
     @ExceptionHandler(IllegalArgumentException::class)

@@ -12,6 +12,7 @@ import io.github.antoniaturcatto.docfind.service.PatientService
 import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
@@ -21,6 +22,7 @@ class MedicalAppointmentController(val medicalAppointmentService: MedicalAppoint
 ) : GenericController {
 
     @PostMapping
+    @PreAuthorize("hasRole('DOCTOR')")
     fun save(@RequestBody @Valid dto: SaveMedicalAppointmentDTO):ResponseEntity<Void>{
         medicalAppointmentService.save(dto)?.let {
             return ResponseEntity.created(generateHeaderLocation(it.id!!)).build()
@@ -29,6 +31,7 @@ class MedicalAppointmentController(val medicalAppointmentService: MedicalAppoint
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('DOCTOR', 'PATIENT')")
     fun search(@RequestParam(name = "id", required = false) id: UUID?,
         @RequestParam(name = "doctor-id", required = false) doctorId: UUID?,
         @RequestParam(name = "doctor-name", required = false) doctorName: String?,
@@ -49,12 +52,14 @@ class MedicalAppointmentController(val medicalAppointmentService: MedicalAppoint
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('DOCTOR')")
     fun delete(@PathVariable id :UUID):ResponseEntity<Void>{
         medicalAppointmentService.delete(id)
         return ResponseEntity.noContent().build()
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('DOCTOR')")
     fun update(@PathVariable id:UUID, @RequestBody @Valid dto: UpdateMedicalAppointmentDTO):ResponseEntity<Void>{
         medicalAppointmentService.save(id, dto)?.let {
             return ResponseEntity.noContent().build()

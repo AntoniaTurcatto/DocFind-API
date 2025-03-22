@@ -30,3 +30,10 @@ create table appointment(
 	CONSTRAINT c_appointment_doctor FOREIGN key (fk_doctor) REFERENCES doctor(id),
 	constraint c_appointment_patient foreign key (fk_patient) references patient(id)
 );
+
+create table sys_user(
+    id uuid not null primary key,
+    login varchar(20) not null unique,
+    pwd varchar(300) not null,
+    roles varchar[]
+);
