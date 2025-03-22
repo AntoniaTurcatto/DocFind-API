@@ -1,5 +1,9 @@
 package io.github.antoniaturcatto.docfind.service
 
+import io.github.antoniaturcatto.docfind.common.dto.PatientDTO
+import io.github.antoniaturcatto.docfind.common.dto.UpdatePatientDTO
+import io.github.antoniaturcatto.docfind.common.mapper.toPatientDTO
+import io.github.antoniaturcatto.docfind.common.mapper.toPatientEntity
 import io.github.antoniaturcatto.docfind.common.model.Patient
 import io.github.antoniaturcatto.docfind.common.validator.PatientValidator
 import io.github.antoniaturcatto.docfind.repository.PatientRepository
@@ -14,41 +18,53 @@ import java.util.*
 class PatientService(private val patientRepository: PatientRepository, private val validator: PatientValidator) {
 
     fun search(id: UUID?, name:String?, age:Int?, address:String?, page: Int, pageSize: Int
-    ):Page<Patient>{
+    ):Page<PatientDTO>{
         var specs :Specification<Patient> = Specification.where({ root, query, cb ->  cb.conjunction()})
 
-        if (id != null){
-            println("ID NOT NULL")
+        if (id != null)
             specs = specs.and(PatientSpecs.idEqual(id))
-        }
 
-        if (name != null) {
-            println("NAME NOT NULL")
+        if (name != null)
             specs = specs.and(PatientSpecs.nameLike(name))
-        }
 
-        if (age != null) {
-            println("AGE NOT NULL")
+        if (age != null)
             specs = specs.and(PatientSpecs.ageEqual(age))
-        }
 
-        if (address != null) {
-            println("ADDRESS NOT NULL")
+        if (address != null)
             specs = specs.and((PatientSpecs.addressLike(address)))
-        }
 
         val pageRequest = PageRequest.of(page, pageSize)
-        return patientRepository.findAll(specs, pageRequest)
+        return patientRepository.findAll(specs, pageRequest).map { toPatientDTO(it) }
     }
 
-    fun save(patient: Patient): Patient {
+    fun save(dto: PatientDTO): Patient {
+        val patient = toPatientEntity(dto)
         validator.validate(patient)
         return patientRepository.save(patient)
     }
 
-    fun delete(patient: Patient){
-        validator.canDelete(patient)
-        patientRepository.deleteById(patient.id!!)
+    fun save(id: UUID, dto: UpdatePatientDTO):Patient?{
+        val patientOpt = patientRepository.findById(id)
+        if (patientOpt.isPresent){
+            dto.name?.let {
+                patientOpt.get().name = it
+            }
+
+            dto.age?.let {
+                patientOpt.get().age = it
+            }
+
+            dto.address?.let {
+                patientOpt.get().address = it
+            }
+            return patientRepository.save(patientOpt.get())
+        }
+        return null
+    }
+
+    fun delete(id: UUID){
+        validator.canDelete(id)
+        patientRepository.deleteById(id)
     }
 
     fun findById(id: UUID):Optional<Patient>{

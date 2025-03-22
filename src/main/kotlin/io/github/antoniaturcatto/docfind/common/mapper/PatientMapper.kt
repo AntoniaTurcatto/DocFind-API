@@ -1,6 +1,6 @@
-package io.github.antoniaturcatto.docfind.controller.mapper
+package io.github.antoniaturcatto.docfind.common.mapper
 
-import io.github.antoniaturcatto.docfind.controller.dto.PatientDTO
+import io.github.antoniaturcatto.docfind.common.dto.PatientDTO
 import io.github.antoniaturcatto.docfind.common.model.Patient
 
 fun toPatientEntity(dto: PatientDTO): Patient {
@@ -10,7 +10,7 @@ fun toPatientEntity(dto: PatientDTO): Patient {
             dto.address)
 }
 
-fun toPatientDTO(patient: Patient): PatientDTO{
+fun toPatientDTO(patient: Patient): PatientDTO {
     return PatientDTO(patient.id,
         patient.name,
         patient.age,

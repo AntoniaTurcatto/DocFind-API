@@ -1,4 +1,4 @@
-package io.github.antoniaturcatto.docfind.controller.dto
+package io.github.antoniaturcatto.docfind.common.dto
 
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min

@@ -9,7 +9,7 @@ import java.util.UUID
 
 interface MedicalAppointmentRepository: JpaRepository<MedicalAppointment, UUID>, JpaSpecificationExecutor<MedicalAppointment> {
 
-    fun existsByDoctor(doctor: Doctor):Boolean
+    fun existsByDoctor_Id(doctorId: UUID):Boolean
 
-    fun existsByPatient(patient: Patient):Boolean
+    fun existsByPatient_Id(patientId: UUID):Boolean
 }

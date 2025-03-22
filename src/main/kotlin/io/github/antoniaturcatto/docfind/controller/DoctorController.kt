@@ -1,8 +1,9 @@
 package io.github.antoniaturcatto.docfind.controller
 
-import io.github.antoniaturcatto.docfind.controller.dto.DoctorDTO
-import io.github.antoniaturcatto.docfind.controller.mapper.toDoctorDTO
-import io.github.antoniaturcatto.docfind.controller.mapper.toDoctorEntity
+import io.github.antoniaturcatto.docfind.common.dto.DoctorDTO
+import io.github.antoniaturcatto.docfind.common.dto.UpdateDoctorDTO
+import io.github.antoniaturcatto.docfind.common.mapper.toDoctorDTO
+import io.github.antoniaturcatto.docfind.common.mapper.toDoctorEntity
 import io.github.antoniaturcatto.docfind.controller.utils.GenericController
 import io.github.antoniaturcatto.docfind.common.model.Role
 import io.github.antoniaturcatto.docfind.service.DoctorService
@@ -32,37 +33,26 @@ class DoctorController(private val doctorService: DoctorService) : GenericContro
         @RequestParam(value = "page", defaultValue = "0") page: Int,
         @RequestParam(value = "page-size", defaultValue = "10") pageSize: Int
     ):ResponseEntity<Page<DoctorDTO>>{
-        val pageObtained = doctorService.search(id,name,role, page, pageSize)
-        val pageDTO = pageObtained.map { toDoctorDTO(it) }
-
+        val pageDTO = doctorService.search(id,name,role, page, pageSize)
         return ResponseEntity.ok(pageDTO)
     }
 
     @PostMapping
     fun save(@RequestBody @Valid doctorDTO: DoctorDTO): ResponseEntity<Any>{
-        var doctorEntity = toDoctorEntity(doctorDTO)
-        doctorEntity = doctorService.save(doctorEntity)
-        val location = generateHeaderLocation(doctorEntity.id!!)
+        val doctor = doctorService.save(doctorDTO)
+        val location = generateHeaderLocation(doctor.id!!)
         return ResponseEntity.created(location).build()
     }
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable("id") id: UUID): ResponseEntity<Any>{
-        val docOptional = doctorService.findById(id)
-        if (docOptional.isPresent){
-            doctorService.delete(docOptional.get())
-            return ResponseEntity.noContent().build()
-        }
+        doctorService.delete(id)
         return ResponseEntity.noContent().build()
     }
 
     @PutMapping("/{id}")
-    fun update(@PathVariable("id") id: UUID, @RequestBody @Valid doctorDTO: DoctorDTO): ResponseEntity<Any>{
-        val docOptional = doctorService.findById(id)
-        if (docOptional.isPresent){
-            docOptional.get().name = doctorDTO.name!!
-            docOptional.get().role = Role.valueOf(doctorDTO.role!!)
-            doctorService.save(docOptional.get())
+    fun update(@PathVariable("id") id: UUID, @RequestBody @Valid dto: UpdateDoctorDTO): ResponseEntity<Any>{
+        doctorService.save(id, dto)?.let {
             return ResponseEntity.noContent().build()
         }
         return ResponseEntity.notFound().build()

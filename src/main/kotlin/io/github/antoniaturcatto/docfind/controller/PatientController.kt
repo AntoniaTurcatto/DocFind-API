@@ -1,11 +1,12 @@
 package io.github.antoniaturcatto.docfind.controller
 
-import io.github.antoniaturcatto.docfind.controller.dto.PatientDTO
+import io.github.antoniaturcatto.docfind.common.dto.PatientDTO
+import io.github.antoniaturcatto.docfind.common.dto.UpdatePatientDTO
 import io.github.antoniaturcatto.docfind.service.PatientService
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import io.github.antoniaturcatto.docfind.controller.mapper.toPatientDTO
-import io.github.antoniaturcatto.docfind.controller.mapper.toPatientEntity
+import io.github.antoniaturcatto.docfind.common.mapper.toPatientDTO
+import io.github.antoniaturcatto.docfind.common.mapper.toPatientEntity
 import io.github.antoniaturcatto.docfind.controller.utils.GenericController
 import jakarta.validation.Valid
 import org.springframework.data.domain.Page
@@ -31,38 +32,27 @@ class PatientController(private val service: PatientService) :GenericController 
         @RequestParam(value = "page", defaultValue = "0") page: Int,
         @RequestParam(value = "page-size", defaultValue = "10") pageSize: Int
     ):ResponseEntity<Page<PatientDTO>>{
-        val pageObtained = service.search(id, name, age, address, page, pageSize)
-        val pageInDTO = pageObtained.map { toPatientDTO(it) }
+        val pageInDTO = service.search(id, name, age, address, page, pageSize)
         return ResponseEntity.ok(pageInDTO)
     }
 
     @PostMapping
-    fun save(@RequestBody @Valid dto:PatientDTO):ResponseEntity<Void>{
-        var patientEntity = toPatientEntity(dto)
-        patientEntity = service.save(patientEntity)
+    fun save(@RequestBody @Valid dto: PatientDTO):ResponseEntity<Void>{
+        val patientEntity = service.save(dto)
         val location = generateHeaderLocation(patientEntity.id!!)
         return ResponseEntity.created(location).build()
     }
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable("id") id:UUID): ResponseEntity<Void>{
-        val patientOpt = service.findById(id)
-        if (patientOpt.isPresent){
-            service.delete(patientOpt.get())
-            return ResponseEntity.noContent().build()
-        }
-        return ResponseEntity.notFound().build()
+        service.delete(id)
+        return ResponseEntity.noContent().build()
     }
 
     @PutMapping("/{id}")
-    fun update(@PathVariable("id") id: UUID, @RequestBody @Valid dto: PatientDTO
+    fun update(@PathVariable("id") id: UUID, @RequestBody @Valid dto: UpdatePatientDTO
     ):ResponseEntity<Void>{
-        val patientOpt = service.findById(id)
-        if (patientOpt.isPresent){
-            patientOpt.get().name = dto.name
-            patientOpt.get().age = dto.age
-            patientOpt.get().address = dto.address?:"Unknown"
-            service.save(patientOpt.get())
+        service.save(id, dto)?.let {
             return ResponseEntity.noContent().build()
         }
         return ResponseEntity.notFound().build()

@@ -1,5 +1,10 @@
 package io.github.antoniaturcatto.docfind.service
 
+import io.github.antoniaturcatto.docfind.common.dto.ResponseMedicalAppointmentDTO
+import io.github.antoniaturcatto.docfind.common.dto.SaveMedicalAppointmentDTO
+import io.github.antoniaturcatto.docfind.common.dto.UpdateMedicalAppointmentDTO
+import io.github.antoniaturcatto.docfind.common.mapper.toMedicalAppointmentEntity
+import io.github.antoniaturcatto.docfind.common.mapper.toResponseMedicalAppointmentDTO
 import io.github.antoniaturcatto.docfind.common.model.MedicalAppointment
 import io.github.antoniaturcatto.docfind.common.model.Role
 import io.github.antoniaturcatto.docfind.repository.MedicalAppointmentRepository
@@ -8,29 +13,66 @@ import io.github.antoniaturcatto.docfind.service.component.excludeNullFromList
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.jpa.domain.Specification
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import java.util.Optional
 import java.util.UUID
 
 @Service
-class MedicalAppointmentService(private val repository : MedicalAppointmentRepository) {
+class MedicalAppointmentService(private val medicalAppointmentRepository : MedicalAppointmentRepository,
+    private val doctorService: DoctorService,
+    private val patientService: PatientService) {
 
-    fun save(medicalAppointment: MedicalAppointment): MedicalAppointment{
-        return repository.save(medicalAppointment)
+
+    fun save(dto: SaveMedicalAppointmentDTO):MedicalAppointment?{
+        val patient = patientService.findById(dto.patientId)
+        val doctor = doctorService.findById(dto.doctorId)
+        if (patient.isPresent && doctor.isPresent){
+            return medicalAppointmentRepository.save(toMedicalAppointmentEntity(dto, patient.get(), doctor.get()))
+        }
+        return null
     }
 
-    fun delete(medicalAppointment: MedicalAppointment){
-        repository.deleteById(medicalAppointment.id!!)
+    fun save(id: UUID, dto: UpdateMedicalAppointmentDTO): MedicalAppointment?{
+        val savedMedicalAppointmentOpt = medicalAppointmentRepository.findById(id)
+        if (savedMedicalAppointmentOpt.isPresent) {
+            dto.doctorId?.let {
+                val doctorOpt = doctorService.findById(it)
+                if (doctorOpt.isPresent)
+                    savedMedicalAppointmentOpt.get().doctor = doctorOpt.get()
+            }
+
+            dto.patientId?.let {
+                val patientOpt = patientService.findById(it)
+                if (patientOpt.isPresent)
+                    savedMedicalAppointmentOpt.get().patient = patientOpt.get()
+            }
+
+
+            dto.dateTime?.let {
+                savedMedicalAppointmentOpt.get().dateTime = it
+            }
+
+            return medicalAppointmentRepository.save(savedMedicalAppointmentOpt.get())
+        }
+        return null
+    }
+
+    fun delete(id: UUID){
+        val medicalAppointmentOpt = medicalAppointmentRepository.findById(id)
+        if(medicalAppointmentOpt.isPresent){
+            medicalAppointmentRepository.delete(medicalAppointmentOpt.get())
+        }
     }
 
     fun findById(id: UUID): Optional<MedicalAppointment>{
-        return repository.findById(id)
+        return medicalAppointmentRepository.findById(id)
     }
 
     fun search(id: UUID?, doctorId: UUID?, doctorName: String?, doctorRole: Role?,
                patientId: UUID?, patientName:String?, patientAge: Int?, patientAddress: String?,
                days: List<Int?>?, months: List<Int?>?, years: List<Int?>?,
-               page: Int, pageSize: Int):Page<MedicalAppointment>{
+               page: Int, pageSize: Int):Page<ResponseMedicalAppointmentDTO>{
 
         var specs : Specification<MedicalAppointment> = Specification { root, query, cb -> cb.conjunction()}
 
@@ -61,22 +103,19 @@ class MedicalAppointmentService(private val repository : MedicalAppointmentRepos
 
 
         if (!days.isNullOrEmpty()){
-            for (day in excludeNullFromList(days))
-                specs = specs.and(MedicalAppointmentSpecs.dayEqual(day))
+            specs = specs.and(MedicalAppointmentSpecs.dayIn(excludeNullFromList(days)))
         }
 
         if (!months.isNullOrEmpty()){
-            for (month in excludeNullFromList(months))
-                specs = specs.and(MedicalAppointmentSpecs.monthEqual(month))
+            specs = specs.and(MedicalAppointmentSpecs.monthIn(excludeNullFromList(months)))
         }
 
         if (!years.isNullOrEmpty()){
-            for (year in excludeNullFromList(years))
-                specs = specs.and(MedicalAppointmentSpecs.yearEqual(year))
+            specs = specs.and(MedicalAppointmentSpecs.yearIn(excludeNullFromList(years)))
         }
 
         val pageRequest = PageRequest.of(page, pageSize)
-        return repository.findAll(specs, pageRequest)
+        return medicalAppointmentRepository.findAll(specs, pageRequest).map { toResponseMedicalAppointmentDTO(it) }
 
     }
 

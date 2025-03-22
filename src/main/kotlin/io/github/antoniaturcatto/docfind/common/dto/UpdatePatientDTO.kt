@@ -1,11 +1,9 @@
-package io.github.antoniaturcatto.docfind.controller.dto
+package io.github.antoniaturcatto.docfind.common.dto
 
 import jakarta.validation.constraints.*
 import java.util.*
 
 data class UpdatePatientDTO(
-    val id : UUID?,
-
     @field:Size(max = 50, message = "field size away of bounds")
     val name :String?,
 

@@ -65,36 +65,43 @@ class MedicalAppointmentSpecs {
             }
         }
 
-        fun dayEqual(day: Int):Specification<MedicalAppointment>{
+        fun dayIn(days: List<Int>):Specification<MedicalAppointment>{
+            println("Comparando dias: $days")
             return Specification { root, query, cb ->
-                cb.equal(cb.function(
-                    "to_char",
-                    String::class.java,
-                    root.get<LocalDateTime>("dateTime"),
-                    cb.literal("dd")
-                ), day.toString())
+                root.get<LocalDateTime>("dateTime")?.let { it ->
+                    cb.function(
+                        "to_char",
+                        String::class.java,
+                        it,
+                        cb.literal("dd")
+                    ).`in`(days.map { it.toString() })
+                }
             }
         }
 
-        fun monthEqual(month: Int):Specification<MedicalAppointment>{
+        fun monthIn(months: List<Int>):Specification<MedicalAppointment>{
             return Specification { root, query, cb ->
-                cb.equal(cb.function(
+                root.get<LocalDateTime>("dateTime")?.let { it ->
+                    cb.function(
                     "to_char",
                     String::class.java,
-                    root.get<LocalDateTime>("dateTime"),
+                    it,
                     cb.literal("mm")
-                ), month.toString())
+                ).`in`(months.map { it.toString() })
+                }
             }
         }
 
-        fun yearEqual(month: Int):Specification<MedicalAppointment>{
+        fun yearIn(years: List<Int>):Specification<MedicalAppointment>{
             return Specification { root, query, cb ->
-                cb.equal(cb.function(
-                    "to_char",
-                    String::class.java,
-                    root.get<LocalDateTime>("dateTime"),
-                    cb.literal("mm")
-                ), month.toString())
+                root.get<LocalDateTime>("dateTime")?.let { it ->
+                    cb.function(
+                        "to_char",
+                        String::class.java,
+                        it,
+                        cb.literal("mm")
+                    ).`in`(years.map { it.toString() })
+                }
             }
         }
 

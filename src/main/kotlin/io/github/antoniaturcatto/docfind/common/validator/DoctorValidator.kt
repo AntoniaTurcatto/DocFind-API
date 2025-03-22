@@ -5,6 +5,7 @@ import io.github.antoniaturcatto.docfind.common.model.Doctor
 import io.github.antoniaturcatto.docfind.repository.MedicalAppointmentRepository
 import io.github.antoniaturcatto.docfind.repository.DoctorRepository
 import org.springframework.stereotype.Component
+import java.util.UUID
 
 @Component
 class DoctorValidator(private val doctorRepository: DoctorRepository,
@@ -15,8 +16,8 @@ class DoctorValidator(private val doctorRepository: DoctorRepository,
             throw ConflictException("There is already a doctor with this data")
     }
 
-    fun canDelete(doctor: Doctor){
-        if (haveAppointmentsScheduled(doctor))
+    fun canDelete(doctorId: UUID){
+        if (haveAppointmentsScheduled(doctorId))
             throw ConflictException("This doctor still has appointments scheduled")
     }
 
@@ -31,7 +32,7 @@ class DoctorValidator(private val doctorRepository: DoctorRepository,
             doctorOpt.isPresent && doctorOpt.get().id != doctor.id //for the user do not duplicate registers with different IDs
     }
 
-    fun haveAppointmentsScheduled(doctor: Doctor):Boolean{
-        return medicalAppointmentRepository.existsByDoctor(doctor)
+    fun haveAppointmentsScheduled(doctorId: UUID):Boolean{
+        return medicalAppointmentRepository.existsByDoctor_Id(doctorId)
     }
 }
