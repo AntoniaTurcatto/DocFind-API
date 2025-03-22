@@ -5,6 +5,7 @@ import io.github.antoniaturcatto.docfind.common.dto.ErrorDTO
 import io.github.antoniaturcatto.docfind.common.dto.ErrorFieldDTO
 import org.springframework.http.HttpStatus
 import org.springframework.http.converter.HttpMessageNotReadableException
+import org.springframework.security.authorization.AuthorizationDeniedException
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -43,6 +44,12 @@ class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     fun handleUsernameNotFoundException(e: UsernameNotFoundException): ErrorDTO{
         return ErrorDTO(HttpStatus.NOT_FOUND.value(), e.message?: "", emptyList())
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException::class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    fun handleAuthorizationDeniedException(e: AuthorizationDeniedException):ErrorDTO{
+        return ErrorDTO(HttpStatus.UNAUTHORIZED.value(), e.message?:"Access Denied", emptyList())
     }
 
     @ExceptionHandler(IllegalArgumentException::class)

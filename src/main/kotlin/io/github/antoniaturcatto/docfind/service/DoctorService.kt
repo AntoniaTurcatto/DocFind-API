@@ -16,7 +16,8 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class DoctorService (private val doctorRepository: DoctorRepository, private val validator: DoctorValidator){
+class DoctorService (private val doctorRepository: DoctorRepository, private val validator: DoctorValidator,
+                     private val userService: UserService){
 
     fun search(id:UUID?, name:String?, role: Role?, page: Int, pageSize: Int): Page<DoctorDTO> {
         var specs: Specification<Doctor> = Specification.where({ root, query, cb ->  cb.conjunction()})
@@ -36,6 +37,7 @@ class DoctorService (private val doctorRepository: DoctorRepository, private val
     fun save(dto: DoctorDTO): Doctor {
         val doctor = toDoctorEntity(dto)
         validator.validate(doctor)
+        doctor.idUser = userService.getLoggedInUser().id
         return doctorRepository.save(doctor)
     }
 
@@ -49,7 +51,7 @@ class DoctorService (private val doctorRepository: DoctorRepository, private val
             dto.role?.let {
                 doctorOpt.get().role = Role.valueOf(it)
             }
-
+            doctorOpt.get().idUser = userService.getLoggedInUser().id
             return doctorRepository.save(doctorOpt.get())
         }
         return null

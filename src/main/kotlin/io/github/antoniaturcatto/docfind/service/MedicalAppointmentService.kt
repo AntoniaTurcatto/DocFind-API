@@ -21,14 +21,17 @@ import java.util.UUID
 @Service
 class MedicalAppointmentService(private val medicalAppointmentRepository : MedicalAppointmentRepository,
     private val doctorService: DoctorService,
-    private val patientService: PatientService) {
+    private val patientService: PatientService,
+    private val userService: UserService) {
 
 
     fun save(dto: SaveMedicalAppointmentDTO):MedicalAppointment?{
         val patient = patientService.findById(dto.patientId)
         val doctor = doctorService.findById(dto.doctorId)
         if (patient.isPresent && doctor.isPresent){
-            return medicalAppointmentRepository.save(toMedicalAppointmentEntity(dto, patient.get(), doctor.get()))
+            val entity = toMedicalAppointmentEntity(dto, patient.get(), doctor.get())
+            entity.idUser = userService.getLoggedInUser().id
+            return medicalAppointmentRepository.save(entity)
         }
         return null
     }
@@ -52,7 +55,7 @@ class MedicalAppointmentService(private val medicalAppointmentRepository : Medic
             dto.dateTime?.let {
                 savedMedicalAppointmentOpt.get().dateTime = it
             }
-
+            savedMedicalAppointmentOpt.get().idUser = userService.getLoggedInUser().id
             return medicalAppointmentRepository.save(savedMedicalAppointmentOpt.get())
         }
         return null

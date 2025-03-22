@@ -37,3 +37,18 @@ create table sys_user(
     pwd varchar(300) not null,
     roles varchar[]
 );
+
+ALTER TABLE doctor
+ADD CONSTRAINT fk_doctor_sys_user
+FOREIGN KEY (id_user)
+REFERENCES sys_user (id);
+
+ALTER TABLE patient
+ADD CONSTRAINT fk_patient_sys_user
+FOREIGN KEY (id_user)
+REFERENCES sys_user (id);
+
+ALTER TABLE appointment
+ADD CONSTRAINT fk_appointment_sys_user
+FOREIGN KEY (id_user)
+REFERENCES sys_user (id);
