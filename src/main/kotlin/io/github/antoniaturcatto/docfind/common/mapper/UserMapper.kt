@@ -6,6 +6,7 @@ import io.github.antoniaturcatto.docfind.common.model.User
 fun toUserEntity(dto: UserDTO):User{
     return User(dto.id,
         dto.login,
+        dto.email,
         dto.pwd,
         dto.roles)
 }
@@ -13,6 +14,7 @@ fun toUserEntity(dto: UserDTO):User{
 fun toUserDto(entity: User):UserDTO{
     return UserDTO(entity.id,
         entity.login,
+        entity.email,
         entity.pwd,
         entity.roles)
 }

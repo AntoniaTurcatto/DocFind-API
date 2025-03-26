@@ -17,6 +17,9 @@ class User(
     var login: String,
 
     @Column
+    var email: String,
+
+    @Column
     var pwd: String,
 
     @JdbcTypeCode(SqlTypes.ARRAY)

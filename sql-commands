@@ -52,3 +52,17 @@ ALTER TABLE appointment
 ADD CONSTRAINT fk_appointment_sys_user
 FOREIGN KEY (id_user)
 REFERENCES sys_user (id);
+
+ALTER TABLE sys_user ADD COLUMN email VARCHAR(150) DEFAULT 'emailo@example.com';
+UPDATE sys_user SET email = 'email_padrao@example.com' WHERE email IS NULL;
+ALTER TABLE sys_user ALTER COLUMN email SET NOT NULL;
+
+ALTER TABLE sys_user ALTER COLUMN login TYPE VARCHAR(150);
+
+create table client(
+	id uuid not null primary key,
+	client_id varchar(150) not null,
+	client_secret varchar(400) not null,
+	redirect_uri varchar(200) not null,
+	scope varchar(50)
+);

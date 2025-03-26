@@ -1,17 +1,17 @@
 package io.github.antoniaturcatto.docfind.config
 
-import io.github.antoniaturcatto.docfind.common.security.CustomUserDetailsService
-import io.github.antoniaturcatto.docfind.service.UserService
+import io.github.antoniaturcatto.docfind.common.security.SocialLoginSuccessHandler
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.config.core.GrantedAuthorityDefaults
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
+
 
 @Configuration
 @EnableWebSecurity
@@ -19,7 +19,7 @@ import org.springframework.security.web.SecurityFilterChain
 class SecurityConfiguration {
 
     @Bean
-    fun securityFilterChain(httpSecurity: HttpSecurity):SecurityFilterChain{
+    fun securityFilterChain(httpSecurity: HttpSecurity, socialLoginSuccessHandler: SocialLoginSuccessHandler):SecurityFilterChain{
         return httpSecurity
             .csrf{it.disable()}
             .formLogin(Customizer.withDefaults())
@@ -29,6 +29,11 @@ class SecurityConfiguration {
                 it.requestMatchers("/users").permitAll() // save
                 it.anyRequest().authenticated()
             }
+            .oauth2Login {
+                it.successHandler(socialLoginSuccessHandler)
+
+            }
+            //.oauth2Login(Customizer.withDefaults())
             .build()
     }
 
@@ -38,8 +43,7 @@ class SecurityConfiguration {
     }
 
     @Bean
-    fun userDetailsService(userService:UserService): UserDetailsService{
-        return CustomUserDetailsService(userService)
+    fun grantedAuthorityDefaults(): GrantedAuthorityDefaults {
+        return GrantedAuthorityDefaults("") //qual prefixo queremos
     }
-
 }
