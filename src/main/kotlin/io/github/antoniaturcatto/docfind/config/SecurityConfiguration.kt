@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.core.GrantedAuthorityDefaults
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter
 import org.springframework.security.web.SecurityFilterChain
 
 
@@ -34,6 +36,7 @@ class SecurityConfiguration {
 
             }
             //.oauth2Login(Customizer.withDefaults())
+            .oauth2ResourceServer{it.jwt(Customizer.withDefaults())}//using JWT to validate user
             .build()
     }
 
@@ -45,5 +48,15 @@ class SecurityConfiguration {
     @Bean
     fun grantedAuthorityDefaults(): GrantedAuthorityDefaults {
         return GrantedAuthorityDefaults("") //qual prefixo queremos
+    }
+
+    //removing SCOPE_ prefix
+    @Bean
+    fun jwtAuthenticationConverter(): JwtAuthenticationConverter {
+        val authoritiesConverter = JwtGrantedAuthoritiesConverter()
+        authoritiesConverter.setAuthorityPrefix("")
+        val converter = JwtAuthenticationConverter()
+        converter.setJwtGrantedAuthoritiesConverter(authoritiesConverter)
+        return converter
     }
 }

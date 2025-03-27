@@ -8,6 +8,7 @@ import io.github.antoniaturcatto.docfind.service.component.SecurityComponent
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.security.SecureRandom
+import java.util.UUID
 
 @Service
 class UserService(private val repository: UserRepository,
@@ -21,6 +22,10 @@ class UserService(private val repository: UserRepository,
 
     fun findByEmail(email: String): User?{
         return repository.findByEmail(email)
+    }
+
+    fun findById(id: UUID):User?{
+        return repository.findById(id).get()
     }
 
     fun save(dto: UserDTO):User?{

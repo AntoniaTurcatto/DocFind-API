@@ -66,3 +66,6 @@ create table client(
 	redirect_uri varchar(200) not null,
 	scope varchar(50)
 );
+
+alter table client add column fk_sys_user uuid not null
+ALTER TABLE client ADD CONSTRAINT client_fk_user foreign KEY (fk_sys_user) references sys_user(id);
